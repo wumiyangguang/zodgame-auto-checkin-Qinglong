@@ -1,23 +1,40 @@
 ## ZodGame 定时自动签到
 
-> 利用 Github Actions 定时任务实现自动签到。随机心情。
+> 利用 青龙面板 定时任务实现自动签到。随机心情。
 
 [![ZodGame-Auto-Checkin](https://github.com/ewigl/zodgame-auto-checkin/actions/workflows/Checkin.yml/badge.svg)](https://github.com/ewigl/zodgame-auto-checkin/actions/workflows/Checkin.yml)
 
 ### 使用方法
 
-1. Fork 此仓库。
-2. 在 fork 后的仓库中启用 Workflows。
-3. 配置环境变量。
+ #### 1.拉取仓库
+
+方式 1：订阅管理
+
+```text
+名称：zodgame签到
+类型：公开仓库
+链接：https://github.com/wumiyangguang/zodgame-auto-checkin-fork.git
+定时类型：crontab
+定时规则：2 2 28 * *
+```
+
+方式 2：指令拉取
+
+```sh
+ql repo https://github.com/wumiyangguang/zodgame-auto-checkin-fork.git
+```
+
+### 2.环境变量添加
+
+在青龙面板环境变量中添加以下变量
+
+| 名称                          | 值                | 功能                   |
+|-----------------------------|------------------|----------------------|
+| ZODGAME_COOKIE              | cookie           | 设置配置文件路径（必选）         |
+| ZODGAME_FORMHASH            | 获取到的formhash  | 开启多用户（可选）            |
+
 
 详细文档: https://ewigl.github.io/notes/posts/programming/github-actions/
-
-### 环境变量
-
-- **Environments**: `ZODGAME`
-
-- **Secrets**:`COOKIE`, `FORMHASH`
-
 ### 注意事项
 
 1. 不能使用 `document.cookie` 方式获取 Cookie，因为 ZodGame 部分 Cookie 具有 [HttpOnly](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Guides/Cookies#%E9%99%90%E5%88%B6%E8%AE%BF%E9%97%AE_cookie) 属性。
