@@ -28,7 +28,7 @@ ql repo https://github.com/wumiyangguang/zodgame-auto-checkin-Qinglong.git
 
 | 名称                          | 值                |
 |-----------------------------|------------------|
-| ZODGAME_COOKIE              | cookie           |
+| ZODGAME_COOKIE              | 获取到的cookie           |
 | ZODGAME_FORMHASH            | 获取到的formhash（获取方法见注意事项）  | 
 
 ### 注意事项
