@@ -2,7 +2,7 @@
 
 > 利用 青龙面板 定时任务实现自动签到。随机心情。
 
-[![ZodGame-Auto-Checkin-fork](https://github.com/ewigl/zodgame-auto-checkin/actions/workflows/Checkin.yml/badge.svg)(https://github.com/wumiyangguang/zodgame-auto-checkin-fork)]
+[![ZodGame-Auto-Checkin-fork](https://github.com/ewigl/zodgame-auto-checkin/actions/workflows/Checkin.yml/badge.svg)](https://github.com/wumiyangguang/zodgame-auto-checkin-fork)
 
 ### 使用方法
 
