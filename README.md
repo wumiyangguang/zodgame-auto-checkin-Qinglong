@@ -28,10 +28,10 @@ ql repo https://github.com/wumiyangguang/zodgame-auto-checkin-fork.git
 
 在青龙面板环境变量中添加以下变量
 
-| 名称                          | 值                | 功能                   |
-|-----------------------------|------------------|----------------------|
-| ZODGAME_COOKIE              | cookie           | 设置配置文件路径（必选）         |
-| ZODGAME_FORMHASH            | 获取到的formhash  | 开启多用户（可选）            |
+| 名称                          | 值                |
+|-----------------------------|------------------|
+| ZODGAME_COOKIE              | cookie           |
+| ZODGAME_FORMHASH            | 获取到的formhash（获取方法见下方）  | 
 
 
 详细文档: https://ewigl.github.io/notes/posts/programming/github-actions/
