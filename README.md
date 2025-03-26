@@ -31,7 +31,7 @@ ql repo https://github.com/wumiyangguang/zodgame-auto-checkin-fork.git
 | 名称                          | 值                |
 |-----------------------------|------------------|
 | ZODGAME_COOKIE              | cookie           |
-| ZODGAME_FORMHASH            | 获取到的formhash（获取方法见下方）  | 
+| ZODGAME_FORMHASH            | 获取到的formhash（获取方法见注意事项）  | 
 
 
 详细文档: https://ewigl.github.io/notes/posts/programming/github-actions/
