@@ -11,7 +11,7 @@
 ```text
 名称：zodgame签到
 类型：公开仓库
-链接：[https://github.com/wumiyangguang/zodgame-auto-checkin-fork.git](https://github.com/wumiyangguang/zodgame-auto-checkin-Qinglong.git)
+链接：https://github.com/wumiyangguang/zodgame-auto-checkin-Qinglong.git
 定时类型：crontab
 定时规则：2 2 28 * *
 ```
