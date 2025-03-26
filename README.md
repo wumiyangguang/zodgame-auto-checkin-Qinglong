@@ -11,7 +11,7 @@
 ```text
 名称：zodgame签到
 类型：公开仓库
-链接：https://github.com/wumiyangguang/zodgame-auto-checkin-fork.git
+链接：[https://github.com/wumiyangguang/zodgame-auto-checkin-fork.git](https://github.com/wumiyangguang/zodgame-auto-checkin-Qinglong.git)
 定时类型：crontab
 定时规则：2 2 28 * *
 ```
@@ -19,7 +19,7 @@
 方式 2：指令拉取
 
 ```sh
-ql repo https://github.com/wumiyangguang/zodgame-auto-checkin-fork.git
+ql repo https://github.com/wumiyangguang/zodgame-auto-checkin-Qinglong.git
 ```
 
 ### 2.环境变量添加
