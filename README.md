@@ -27,11 +27,11 @@ ql repo https://github.com/wumiyangguang/zodgame-auto-checkin-Qinglong.git "" ""
 
 在青龙面板环境变量中添加以下变量
 
-| 名称                          | 值                | 功能         |
+| 名称                          | 值                | 说明         |
 |-----------------------------|------------------|------------------|
 | ZODGAME_COOKIE              |                  |获取到的cookie（必选） |
 | ZODGAME_FORMHASH            |                  |获取到的formhash（获取方法见注意事项）（必选）|
-| LOG_RESPONSE                |        1      |完整响应输出（可选）|
+| LOG_RESPONSE                |        1      |在日志中完整输出网页响应内容（可选）|
 | ZODGAME_PROXY               |                  |代理配置（可选）|
 
 ### 注意事项
