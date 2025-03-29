@@ -47,3 +47,5 @@ ql repo https://github.com/wumiyangguang/zodgame-auto-checkin-Qinglong.git "" ""
 3. cookie 与 formhash 一一对应，更新 cookie 时必须同时更新 formhash。
   
 4. **通知配置为青龙 config.sh 中配置**
+   
+5. ***若出现fetch failed错误，大概率是需要配置代理。***
