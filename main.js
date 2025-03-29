@@ -3,13 +3,26 @@
 // ========================
 const sendNotify = require('./sendNotify');
 const { HttpsProxyAgent } = require('https-proxy-agent');
+//const fetch = require('node-fetch');
 
+// 配置常量
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 2000;
+const REQUEST_TIMEOUT = 10000;
 const CHECKIN_URL = "https://zodgame.xyz/plugin.php?id=dsu_paulsign:sign&operation=qiandao&infloat=1&inajax=1";
 
 // 配置项
 const config = {
-  // 是否输出响应内容（可通过环境变量 LOG_RESPONSE=1 启用）
   logResponse: process.env.LOG_RESPONSE === '1'
+};
+
+// 错误模式定义
+const ERROR_PATTERNS = {
+  MAINTENANCE: /网站维护中|系统升级/i,
+  INVALID_REQUEST: /无效请求|参数错误/i,
+  RATE_LIMIT: /访问过于频繁|rate limit/i,
+  AUTH_FAILED: /未登录|权限不足/i,
+  SERVER_ERROR: /服务器错误|500错误/i
 };
 
 // 基础请求头配置
@@ -79,11 +92,93 @@ function generateDetailedMessage(context) {
   return message;
 }
 
+async function enhancedFetch(url, options, retries = MAX_RETRIES) {
+    let timeout;
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
+    
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal
+    });
+    
+    clearTimeout(timeout);
+
+    if (!response.ok) {
+      const body = await response.text();
+      const errorType = detectErrorType(response.status, body);
+      throw new Error(`HTTP ${response.status} ${errorType}`);
+    }
+
+    return response;
+  } catch (error) {
+    clearTimeout(timeout);
+    
+    if (retries > 0 && isRetryableError(error)) {
+      console.log(`[RETRY] 请求失败，${retries}次重试剩余... (${error.message})`);
+      await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+      return enhancedFetch(url, options, retries - 1);
+    }
+    throw enhanceFetchError(error);
+  }
+}
+
+function detectErrorType(status, body) {
+  for (const [type, pattern] of Object.entries(ERROR_PATTERNS)) {
+    if (pattern.test(body)) return type;
+  }
+  
+  switch(status) {
+    case 400: return 'INVALID_REQUEST';
+    case 401: return 'AUTH_FAILED';
+    case 403: return 'FORBIDDEN';
+    case 404: return 'NOT_FOUND';
+    case 429: return 'RATE_LIMIT';
+    case 500: return 'SERVER_ERROR';
+    case 502: return 'BAD_GATEWAY';
+    case 503: return 'SERVICE_UNAVAILABLE';
+    default: return 'UNKNOWN_ERROR';
+  }
+}
+
+function isRetryableError(error) {
+  const retryableCodes = [
+    'ETIMEDOUT', 'ECONNRESET', 'ECONNREFUSED',
+    'ENOTFOUND', 'EAI_AGAIN', 'ESOCKETTIMEDOUT'
+  ];
+  
+  return retryableCodes.some(code => error.code === code) ||
+         error.message.includes('timeout') ||
+         error.message.includes('aborted');
+}
+
+function enhanceFetchError(error) {
+  const enhancedError = new Error(error.message);
+  enhancedError.stack = error.stack;
+  
+  if (error.type === 'aborted') {
+    enhancedError.message = `请求超时 (${REQUEST_TIMEOUT}ms)`;
+    enhancedError.code = 'ETIMEDOUT';
+  }
+  
+  return enhancedError;
+}
+
+function isValidResponse(text) {
+  const validPatterns = [
+    /恭喜你签到成功/,
+    /您今日已经签到/,
+    /formhash=/,
+    /dsu_paulsign/
+  ];
+  
+  return validPatterns.some(pattern => pattern.test(text));
+}
+
 async function enhancedSign(cookie, formhash) {
   const startTime = Date.now();
   let moodCode, responseText;
-  
-  // 优先使用 ZODGAME_PROXY，其次使用 HTTP_PROXY/http_proxy
   const proxyUrl = process.env.ZODGAME_PROXY || process.env.HTTP_PROXY || process.env.http_proxy;
   const usingProxy = !!proxyUrl;
 
@@ -96,7 +191,6 @@ async function enhancedSign(cookie, formhash) {
     moodCode = MOODS[Math.floor(Math.random() * MOODS.length)];
     console.log(`[MOOD] 使用心情参数: ${moodCode} (${getMoodText(moodCode)})`);
 
-    // 合并基础请求头和自定义头
     const headers = {
       ...baseHeaders,
       'Cookie': cookie,
@@ -114,19 +208,20 @@ async function enhancedSign(cookie, formhash) {
     }
 
     console.log('[REQUEST] 发送签到请求...');
-    console.log('[REQUEST] 目标URL:', CHECKIN_URL);
     
-    const response = await fetch(CHECKIN_URL, fetchOptions);
-
+    const response = await enhancedFetch(CHECKIN_URL, fetchOptions);
     responseText = await response.text();
-    const executionTime = Date.now() - startTime;
+    
+    if (!isValidResponse(responseText)) {
+      const errorType = detectErrorType(response.status, responseText);
+      throw new Error(`无效响应: ${errorType}`);
+    }
 
+    const executionTime = Date.now() - startTime;
     console.log(`[RESPONSE] 状态码: ${response.status}`);
     
-    // 只有当 LOG_RESPONSE 为 1 时才输出任何响应信息
     if (config.logResponse) {
       console.log(`[RESPONSE] 内容长度: ${responseText.length} 字节`);
-      console.log('[RESPONSE] 响应摘要:', extractKeyInfo(responseText));
       console.log('[RESPONSE] 完整响应内容:');
       console.log(responseText);
     }
@@ -167,23 +262,23 @@ async function enhancedSign(cookie, formhash) {
 
   } catch (error) {
     const executionTime = Date.now() - startTime;
-    console.error('[ERROR] 签到失败:', error.message);
+    console.error(`[ERROR] 签到失败: ${error.message}`);
     
-    // 只有当 LOG_RESPONSE 为 1 时才输出错误响应内容
-    if (responseText && config.logResponse) {
-      console.error('[ERROR] 错误响应内容:', responseText);
-    }
+    let errorCategory = 'NETWORK_ERROR';
+    if (error.message.includes('HTTP')) errorCategory = 'HTTP_ERROR';
+    if (error.message.includes('无效响应')) errorCategory = 'INVALID_RESPONSE';
     
     await sendNotify.sendNotify(
-      "‼️ 签到失败 - 心情: " + (moodCode ? getMoodText(moodCode) : "未设置"),
+      `‼️ 签到失败 - ${errorCategory}`,
       generateDetailedMessage({
         status: "签到失败",
         moodCode,
         formhash,
-        responseLength: responseText?.length || 0,
         executionTime,
-        error,
-        responseSnippet: config.logResponse ? (responseText ? extractKeyInfo(responseText) : "无响应内容") : "响应内容已隐藏",
+        error: {
+          message: error.message,
+          type: error.code || errorCategory
+        },
         proxyUsed: usingProxy ? proxyUrl : false
       })
     );
