@@ -48,5 +48,5 @@ ql repo https://github.com/wumiyangguang/zodgame-auto-checkin-Qinglong.git "" ""
   
 4. **通知配置为青龙 config.sh 中配置**
    
-5. ***若出现fetch failed错误，大概率是需要配置代理。 若不想配置代理情使用[![ZodGame-Auto-Checkin](https://github.com/ewigl/zodgame-auto-checkin/actions/workflows/Checkin.yml/badge.svg)](https://github.com/ewigl/zodgame-auto-checkin)项目于github Actions部署***
+5. ***若出现fetch failed错误，大概率是需要配置代理。 若不想配置代理情使用[![ZodGame-Auto-Checkin](https://github.com/ewigl/zodgame-auto-checkin/actions/workflows/Checkin.yml/badge.svg)](https://github.com/ewigl/zodgame-auto-checkin)项目于Github Actions部署***
 
