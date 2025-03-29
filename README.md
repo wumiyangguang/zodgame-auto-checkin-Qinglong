@@ -23,7 +23,7 @@
 ql repo https://github.com/wumiyangguang/zodgame-auto-checkin-Qinglong.git "" "" "https-proxy-agent"
  ```
 
-### 2.环境变量添加
+#### 2.环境变量添加
 
 在青龙面板环境变量中添加以下变量
 
