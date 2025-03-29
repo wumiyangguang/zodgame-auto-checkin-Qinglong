@@ -14,22 +14,25 @@
 链接：https://github.com/wumiyangguang/zodgame-auto-checkin-Qinglong.git
 定时类型：crontab
 定时规则：2 2 28 * *
+依赖文件：https-proxy-agent
 ```
 
 方式 2：指令拉取
 
 ```sh
-ql repo https://github.com/wumiyangguang/zodgame-auto-checkin-Qinglong.git
-```
+ql repo https://github.com/wumiyangguang/zodgame-auto-checkin-Qinglong.git "" "" "https-proxy-agent"
+ ```
 
 ### 2.环境变量添加
 
 在青龙面板环境变量中添加以下变量
 
-| 名称                          | 值                |
-|-----------------------------|------------------|
-| ZODGAME_COOKIE              | 获取到的cookie           |
-| ZODGAME_FORMHASH            | 获取到的formhash（获取方法见注意事项）  | 
+| 名称                          | 值                | 功能         |
+|-----------------------------|------------------|------------------|
+| ZODGAME_COOKIE              |                  |获取到的cookie（必选） |
+| ZODGAME_FORMHASH            |                  |获取到的formhash（获取方法见注意事项）（必须）|
+| LOG_RESPONSE                |        1      |完整响应输出（可选）|
+| ZODGAME_PROXY               |                  |代理配置（可选）|
 
 ### 注意事项
 
