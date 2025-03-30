@@ -69,7 +69,8 @@ function generateDetailedMessage(context) {
     moodCode,
     executionTime,
     error,
-    proxyUsed
+    proxyUsed,
+    responseSnippet
   } = context;
 
   const moodText = getMoodText(moodCode);
@@ -80,15 +81,16 @@ function generateDetailedMessage(context) {
   message += `😄 心情: ${moodText}\n`;
   message += `⏱️ 耗时: ${executionTime}ms\n`;
   
-  if (proxyUsed) {
-    message += `🌐 代理: 已使用 \n`;
-  } else {
-    message += `🌐 代理: 未使用\n`;
+  message += proxyUsed ? `🌐 代理: 已使用\n` : `🌐 代理: 未使用\n`;
+
+  if (status === "签到成功" && responseSnippet) {
+    message += `🎁 奖励: ${responseSnippet}\n`;
   }
 
   if (error) {
     message += `\n### ❌ 错误详情\n\`\`\`\n${error.message}\n\`\`\`\n`;
   }
+
   return message;
 }
 
@@ -226,20 +228,21 @@ async function enhancedSign(cookie, formhash) {
       console.log(responseText);
     }
 
-    if (responseText.includes("恭喜你签到成功!")) {
-      await sendNotify.sendNotify(
-        "✅ 签到成功 - 今日心情: " + getMoodText(moodCode),
-        generateDetailedMessage({
-          status: "签到成功",
-          moodCode,
-          formhash,
-          responseLength: responseText.length,
-          executionTime,
-          responseSnippet: config.logResponse ? extractKeyInfo(responseText) : "响应内容已隐藏",
-          proxyUsed: usingProxy ? proxyUrl : false
-        })
-      );
-      return true;
+    if (responseText.includes("恭喜你签到成功")) {
+        const rewardInfo = extractKeyInfo(responseText);
+        await sendNotify(
+            `✅ 签到成功 - 获得奖励`, 
+            generateDetailedMessage({
+            status: "签到成功",
+            moodCode,
+            formhash,
+            responseLength: responseText.length,
+            executionTime,
+            responseSnippet: rewardInfo, 
+            proxyUsed: usingProxy ? proxyUrl : false
+            })
+        );
+        return true;
     } 
 
     if (responseText.includes("您今日已经签到")) {
@@ -287,11 +290,14 @@ async function enhancedSign(cookie, formhash) {
 }
 
 function extractKeyInfo(html) {
-  //const pointMatch = html.match(/获得(\d+)点积分/);
-  //if (pointMatch) return `获得 ${pointMatch[1]} 积分`;
+  const rewardMatch = html.match(/恭喜你签到成功!获得随机奖励\s+([^\s]+)\s+(\d+)\s+([^\<]+)/);
+  if (rewardMatch) {
+    return `获得 ${rewardMatch[2]}${rewardMatch[3]}${rewardMatch[1]}`;
+  }
 
   const errorMatch = html.match(/<div class="alert_error">([\s\S]*?)<\/div>/);
   if (errorMatch) return errorMatch[1].trim();
+
 
   return html.length > 500 ? 
     `${html.slice(0, 200)}...\n......\n${html.slice(-200)}` : 
