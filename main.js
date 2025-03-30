@@ -221,8 +221,8 @@ async function enhancedSign(cookie, formhash) {
     console.log(`[RESPONSE] 状态码: ${response.status}`);
     
     if (config.logResponse) {
-      console.log(`[RESPONSE] 内容长度: ${responseText.length} 字节`);
-      console.log('[RESPONSE] 完整响应内容:');
+      //console.log(`[RESPONSE] 内容长度: ${responseText.length} 字节`);
+      console.log('[RESPONSE] 响应内容:');
       console.log(responseText);
     }
 
@@ -287,8 +287,8 @@ async function enhancedSign(cookie, formhash) {
 }
 
 function extractKeyInfo(html) {
-  const pointMatch = html.match(/获得(\d+)点积分/);
-  if (pointMatch) return `获得 ${pointMatch[1]} 积分`;
+  //const pointMatch = html.match(/获得(\d+)点积分/);
+  //if (pointMatch) return `获得 ${pointMatch[1]} 积分`;
 
   const errorMatch = html.match(/<div class="alert_error">([\s\S]*?)<\/div>/);
   if (errorMatch) return errorMatch[1].trim();
