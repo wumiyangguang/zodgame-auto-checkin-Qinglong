@@ -267,7 +267,7 @@ async function enhancedSign(cookie, formhash) {
     const executionTime = Date.now() - startTime;
     console.error(`[ERROR] 签到失败: ${error.message}`);
     
-    let errorCategory = 'NETWORK_ERROR';
+    let errorCategory = '';
     if (error.message.includes('HTTP')) errorCategory = 'HTTP_ERROR';
     if (error.message.includes('无效响应')) errorCategory = 'INVALID_RESPONSE';
     
