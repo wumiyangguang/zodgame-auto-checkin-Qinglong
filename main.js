@@ -230,7 +230,7 @@ async function enhancedSign(cookie, formhash) {
 
     if (responseText.includes("恭喜你签到成功")) {
         const rewardInfo = extractKeyInfo(responseText);
-        await sendNotify(
+        await sendNotify.sendNotify(
             `✅ 签到成功 - 获得奖励`, 
             generateDetailedMessage({
             status: "签到成功",
