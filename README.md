@@ -14,7 +14,7 @@
 链接：https://github.com/wumiyangguang/zodgame-auto-checkin-Qinglong.git
 定时类型：crontab
 定时规则：2 2 28 * *
-依赖文件：https-proxy-agent
+依赖文件：无
 ```
 
 方式 2：指令拉取
