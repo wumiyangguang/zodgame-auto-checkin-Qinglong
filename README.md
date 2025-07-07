@@ -53,5 +53,5 @@ ql repo https://github.com/wumiyangguang/zodgame-auto-checkin-Qinglong.git "" ""
 104.26.15.223 http://www.zodgame.xyz
 104.26.15.223 zodgame.xyz
 172.67.72.167 http://www.zodgame.xyz
-172.67.72.167 zodgame.xyz```
-
+172.67.72.167 zodgame.xyz
+```
