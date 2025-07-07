@@ -12,7 +12,8 @@ const CHECKIN_URL = "https://zodgame.xyz/plugin.php?id=dsu_paulsign:sign&operati
 
 // 配置项
 const config = {
-  logResponse: process.env.LOG_RESPONSE === '1'
+  logResponse: process.env.LOG_RESPONSE === '1',
+  enableNotify: process.env.ENABLE_NOTIFY == '1' // 默认关闭通知，设置为1时开启
 };
 
 // 错误模式定义
@@ -176,6 +177,21 @@ function isValidResponse(text) {
   return validPatterns.some(pattern => pattern.test(text));
 }
 
+async function sendNotification(title, message) {
+  if (!config.enableNotify) {
+    console.log(`[NOTIFY] 通知已禁用: ${title}`);
+    return;
+  }
+  
+  try {
+    console.log(`[NOTIFY] 发送通知: ${title}`);
+    await sendNotify.sendNotify(title, message);
+    console.log('[NOTIFY] 通知发送成功');
+  } catch (error) {
+    console.error('[ERROR] 通知发送失败:', error.message);
+  }
+}
+
 async function enhancedSign(cookie, formhash) {
   const startTime = Date.now();
   let moodCode, responseText;
@@ -216,7 +232,7 @@ async function enhancedSign(cookie, formhash) {
 
     if (responseText.includes("恭喜你签到成功")) {
         const rewardInfo = extractKeyInfo(responseText);
-        await sendNotify.sendNotify(
+        await sendNotification(
             `✅ 签到成功 - 获得奖励`, 
             generateDetailedMessage({
             status: "签到成功",
@@ -231,7 +247,7 @@ async function enhancedSign(cookie, formhash) {
     } 
 
     if (responseText.includes("您今日已经签到")) {
-      await sendNotify.sendNotify(
+      await sendNotification(
         "🔄 签到重复 - 今日心情: " + getMoodText(moodCode),
         generateDetailedMessage({
           status: "今日已签到",
@@ -255,7 +271,7 @@ async function enhancedSign(cookie, formhash) {
     if (error.message.includes('HTTP')) errorCategory = 'HTTP_ERROR';
     if (error.message.includes('无效响应')) errorCategory = 'INVALID_RESPONSE';
     
-    await sendNotify.sendNotify(
+    await sendNotification(
       `‼️ 签到失败 - ${errorCategory}`,
       generateDetailedMessage({
         status: "签到失败",
@@ -290,7 +306,8 @@ function extractKeyInfo(html) {
 async function main() {
   console.log('[INIT] 启动签到任务');
   console.log('[CONFIG] 当前配置:', {
-    logResponse: config.logResponse ? '开启(将显示响应内容)' : '关闭(不显示任何响应内容)'
+    logResponse: config.logResponse ? '开启(将显示响应内容)' : '关闭(不显示任何响应内容)',
+    enableNotify: config.enableNotify ? '开启(将发送通知)' : '关闭(不发送通知)'
   });
   
   try {
