@@ -2,7 +2,6 @@
 // 初始化配置
 // ========================
 const sendNotify = require('./sendNotify');
-const { HttpsProxyAgent } = require('https-proxy-agent');
 //const fetch = require('node-fetch');
 
 // 配置常量
@@ -69,7 +68,6 @@ function generateDetailedMessage(context) {
     moodCode,
     executionTime,
     error,
-    proxyUsed,
     responseSnippet
   } = context;
 
@@ -81,7 +79,7 @@ function generateDetailedMessage(context) {
   message += `😄 心情: ${moodText}\n`;
   message += `⏱️ 耗时: ${executionTime}ms\n`;
   
-  message += proxyUsed ? `🌐 代理: 已使用\n` : `🌐 代理: 未使用\n`;
+  message += `🌐 代理: 未使用\n`;
 
   if (status === "签到成功" && responseSnippet) {
     message += `🎁 奖励: ${responseSnippet}\n`;
@@ -181,13 +179,6 @@ function isValidResponse(text) {
 async function enhancedSign(cookie, formhash) {
   const startTime = Date.now();
   let moodCode, responseText;
-  const proxyUrl = process.env.ZODGAME_PROXY || process.env.HTTP_PROXY || process.env.http_proxy;
-  const usingProxy = !!proxyUrl;
-
-  console.log(`[PROXY] 代理检测: ${usingProxy ? '已配置' : '未配置'}`);
-  if (usingProxy) {
-    console.log(`[PROXY] 使用代理: ${proxyUrl}`);
-  }
 
   try {
     moodCode = MOODS[Math.floor(Math.random() * MOODS.length)];
@@ -205,10 +196,6 @@ async function enhancedSign(cookie, formhash) {
       body: `formhash=${formhash}&qdxq=${moodCode}`
     };
 
-    if (usingProxy) {
-      fetchOptions.agent = new HttpsProxyAgent(proxyUrl);
-    }
-
     console.log('[REQUEST] 发送签到请求...');
     
     const response = await enhancedFetch(CHECKIN_URL, fetchOptions);
@@ -223,7 +210,6 @@ async function enhancedSign(cookie, formhash) {
     console.log(`[RESPONSE] 状态码: ${response.status}`);
     
     if (config.logResponse) {
-      //console.log(`[RESPONSE] 内容长度: ${responseText.length} 字节`);
       console.log('[RESPONSE] 响应内容:');
       console.log(responseText);
     }
@@ -238,8 +224,7 @@ async function enhancedSign(cookie, formhash) {
             formhash,
             responseLength: responseText.length,
             executionTime,
-            responseSnippet: rewardInfo, 
-            proxyUsed: usingProxy ? proxyUrl : false
+            responseSnippet: rewardInfo
             })
         );
         return true;
@@ -254,8 +239,7 @@ async function enhancedSign(cookie, formhash) {
           formhash,
           responseLength: responseText.length,
           executionTime,
-          responseSnippet: config.logResponse ? extractKeyInfo(responseText) : "响应内容已隐藏",
-          proxyUsed: usingProxy ? proxyUrl : false
+          responseSnippet: config.logResponse ? extractKeyInfo(responseText) : "响应内容已隐藏"
         })
       );
       return false;
@@ -281,8 +265,7 @@ async function enhancedSign(cookie, formhash) {
         error: {
           message: error.message,
           type: error.code || errorCategory
-        },
-        proxyUsed: usingProxy ? proxyUrl : false
+        }
       })
     );
     throw error;
@@ -307,8 +290,7 @@ function extractKeyInfo(html) {
 async function main() {
   console.log('[INIT] 启动签到任务');
   console.log('[CONFIG] 当前配置:', {
-    logResponse: config.logResponse ? '开启(将显示响应内容)' : '关闭(不显示任何响应内容)',
-    proxy: process.env.ZODGAME_PROXY ? '已配置' : '未配置'
+    logResponse: config.logResponse ? '开启(将显示响应内容)' : '关闭(不显示任何响应内容)'
   });
   
   try {
