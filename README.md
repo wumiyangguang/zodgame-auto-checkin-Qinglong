@@ -20,7 +20,7 @@
 方式 2：指令拉取
 
 ```sh
-ql repo https://github.com/wumiyangguang/zodgame-auto-checkin-Qinglong.git "" "" "https-proxy-agent"
+ql repo https://github.com/wumiyangguang/zodgame-auto-checkin-Qinglong.git "" ""
  ```
 
 #### 2.环境变量添加
