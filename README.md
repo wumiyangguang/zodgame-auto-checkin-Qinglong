@@ -32,7 +32,6 @@ ql repo https://github.com/wumiyangguang/zodgame-auto-checkin-Qinglong.git "" ""
 | ZODGAME_COOKIE              |                  |获取到的cookie（必选） |
 | ZODGAME_FORMHASH            |                  |获取到的formhash（获取方法见注意事项）（必选）|
 | LOG_RESPONSE                |        1      |在日志中完整输出网页响应内容（可选）|
-| ZODGAME_PROXY               |                  |代理配置（可选）|
 
 ### 注意事项
 
@@ -47,5 +46,11 @@ ql repo https://github.com/wumiyangguang/zodgame-auto-checkin-Qinglong.git "" ""
 3. cookie 与 formhash 一一对应，更新 cookie 时必须同时更新 formhash。
   
 4. **通知配置为青龙 config.sh 中配置**
-   
+5. **显示 fetch failed是因为国内无法解析zodgame.xyz，需在host文件增加以下内容：
+104.26.14.223 http://www.zodgame.xyz
+104.26.14.223 zodgame.xyz
+104.26.15.223 http://www.zodgame.xyz
+104.26.15.223 zodgame.xyz
+172.67.72.167 http://www.zodgame.xyz
+172.67.72.167 zodgame.xyz**
 
